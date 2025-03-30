@@ -1,0 +1,48 @@
+version: '2.1'
+
+services:
+  mysql:
+    platform: linux/amd64
+    image: mysql:latest
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: dlsa_db
+      MYSQL_USER: dlsa
+      MYSQL_PASSWORD: dlsa
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+  
+  phpmyadmin:
+    platform: linux/amd64
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    ports:
+      - "5001:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # dlsa-api:
+  #   image: docker.gitlab.gwdg.de/maria.skrabalekova/dlsae_game:latest
+  #   build: 
+  #     context: .
+  #     dockerfile: Dockerfile.Api
+  #   container_name: dlsa_api
+  #   environment:
+  #     - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/dlsa_db?allowPublicKeyRetrieval=true&useSSL=false
+  #   ports:
+  #     - "5002:8080"
+  #   depends_on:
+  #     mysql:
+  #       condition: service_healthy
