@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -47,21 +48,28 @@ public class DataInitializer implements CommandLineRunner {
         System.out.println("Rollen wurden initialisiert.");
     }
 
-    private void initilizeUser(){
-        List<String> standardUser = List.of("admin");
+    private void initilizeUser() {
+        // Map mit username → rolename
+        Map<String, String> standardUsers = Map.of(
+                "admin", "Administrator",
+                "max", "Benutzer",
+                "lisa", "Gast"
+        );
 
-        for (String username : standardUser) {
+        for (Map.Entry<String, String> entry : standardUsers.entrySet()) {
+            String username = entry.getKey();
+            String rolename = entry.getValue();
+
             userRepository.findByUsername(username)
                     .orElseGet(() -> {
-
-                        Role adminRole = roleRepository.findByRolename("Administrator")
-                                .orElseThrow(() -> new RuntimeException("Admin role not found"));
+                        Role role = roleRepository.findByRolename(rolename)
+                                .orElseThrow(() -> new RuntimeException("Rolle nicht gefunden: " + rolename));
 
                         User newUser = new User()
                                 .setUsername(username)
-                                .setPassword(passwordEncoder.encode("admin"))
+                                .setPassword(passwordEncoder.encode("admin")) // Standardpasswort
                                 .setActive(true)
-                                .setRole(adminRole);
+                                .setRole(role);
                         return userRepository.save(newUser);
                     });
         }

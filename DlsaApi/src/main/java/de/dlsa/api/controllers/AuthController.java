@@ -23,6 +23,7 @@ import java.util.Collection;
  */
 @RequestMapping("/auth")
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 public class AuthController {
     private final AuthenticationService authenticationService;
 
@@ -41,10 +42,12 @@ public class AuthController {
      * @param registerUserDto Enthält die relevanten Userinformationen für die Registrierung (RegisterUserDto)
      * @return Rückgabe eines gültigen JWT zur Nutzung der geschützten Endpunkte der API
      */
+    /*
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody RegisterUserDto registerUserDto) {
         return ResponseEntity.ok(authenticationService.register(registerUserDto));
     }
+     */
 
     /**
      * Endpunkt zur Registrierung eines Users
@@ -56,12 +59,5 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@RequestBody LoginUserDto loginUserDto) {
         return ResponseEntity.ok(authenticationService.login(loginUserDto));
     }
-
-    @GetMapping("/test")
-    public void test() {
-
-    }
-
-
 }
 
